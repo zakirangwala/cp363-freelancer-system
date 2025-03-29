@@ -11,9 +11,14 @@ export default async function handler(
         include: {
           items: {
             include: {
-              service: true,
+              service: {
+                include: {
+                  freelancer: true,
+                },
+              },
             },
           },
+          user: true,
         },
       });
       return res.status(200).json(carts);
@@ -34,7 +39,16 @@ export default async function handler(
           userID: parseInt(userId),
         },
         include: {
-          items: true,
+          items: {
+            include: {
+              service: {
+                include: {
+                  freelancer: true,
+                },
+              },
+            },
+          },
+          user: true,
         },
       });
 

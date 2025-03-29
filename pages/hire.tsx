@@ -2,7 +2,6 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import Layout from "../components/Layout";
 
 interface Service {
   id: number;
@@ -22,6 +21,7 @@ const HirePage: NextPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -51,29 +51,79 @@ const HirePage: NextPage = () => {
 
   const handleAddToCart = async () => {
     if (!selectedService) return;
+    if (isProcessing) return;
 
     try {
+      setIsProcessing(true);
+      console.log("Starting cart creation process...");
+
       // First create a cart if needed
       const cartResponse = await axios.post("/api/cart", {
-        userID: 1, // For MVP, we'll use a default user
+        userId: 1, // For MVP, we'll use a default user
       });
+      console.log("Cart creation response:", cartResponse.data);
 
+      if (!cartResponse.data || !cartResponse.data.id) {
+        console.error(
+          "Cart creation failed - Invalid response:",
+          cartResponse.data
+        );
+        throw new Error("Failed to create cart");
+      }
+
+      console.log("Adding item to cart...");
       // Then add the item to the cart
-      await axios.post("/api/cart-items", {
+      const cartItemResponse = await axios.post("/api/cart-items", {
         cartId: cartResponse.data.id,
         serviceId: selectedService.id,
         quantity: 1,
       });
+      console.log("Cart item creation response:", cartItemResponse.data);
 
-      // Redirect to checkout
-      window.location.href = "/checkout";
-    } catch (error) {
+      if (!cartItemResponse.data) {
+        console.error(
+          "Cart item creation failed - Invalid response:",
+          cartItemResponse.data
+        );
+        throw new Error("Failed to add item to cart");
+      }
+
+      console.log("Fetching updated cart...");
+      // Wait for cart to be updated before redirecting
+      const updatedCartResponse = await axios.get("/api/cart");
+      console.log("Updated cart response:", updatedCartResponse.data);
+
+      const latestCart =
+        updatedCartResponse.data[updatedCartResponse.data.length - 1];
+      console.log("Latest cart:", latestCart);
+      console.log("Latest cart items:", latestCart?.items);
+
+      if (latestCart?.items?.length > 0) {
+        console.log("Cart successfully updated, redirecting to checkout...");
+        window.location.href = "/checkout";
+      } else {
+        console.error("Cart update verification failed:", {
+          latestCart,
+          items: latestCart?.items,
+          cartId: cartResponse.data.id,
+        });
+        throw new Error("Cart was not properly updated");
+      }
+    } catch (error: any) {
       console.error("Error adding to cart:", error);
+      console.error("Full error details:", {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+      });
+      alert("Failed to add item to cart. Please try again.");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
   return (
-    <Layout>
+    <div className="min-h-screen bg-gray-50">
       <Head>
         <title>Hire Freelancers - Freelancer System</title>
         <meta name="description" content="Find and hire freelancers" />
@@ -98,7 +148,7 @@ const HirePage: NextPage = () => {
               placeholder="Search for services, freelancers, or keywords..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-6 py-4 text-lg border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+              className="w-full px-6 py-4 text-lg border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent text-black"
             />
             <svg
               className="absolute right-6 top-1/2 transform -translate-y-1/2 h-6 w-6 text-gray-400"
@@ -183,15 +233,45 @@ const HirePage: NextPage = () => {
               </div>
               <button
                 onClick={handleAddToCart}
-                className="bg-violet-600 text-white px-6 py-3 rounded-lg hover:bg-violet-700 transition-colors"
+                disabled={isProcessing}
+                className={`${
+                  isProcessing
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-violet-600 hover:bg-violet-700"
+                } text-white px-6 py-3 rounded-lg transition-colors flex items-center space-x-2`}
               >
-                Proceed to Checkout
+                {isProcessing ? (
+                  <>
+                    <svg
+                      className="animate-spin h-5 w-5 mr-2"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                    <span>Processing...</span>
+                  </>
+                ) : (
+                  "Proceed to Checkout"
+                )}
               </button>
             </div>
           </div>
         )}
       </div>
-    </Layout>
+    </div>
   );
 };
 
