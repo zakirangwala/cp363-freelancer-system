@@ -2,6 +2,10 @@
 
 A full-stack freelancer marketplace system built with Next.js, Prisma, and MySQL. This project was developed for CP363 Databases.
 
+
+![main-page](https://github.com/user-attachments/assets/0a8f7c51-ec1e-4ce4-b23e-db461067e418)
+
+
 ## Live Demo
 
 - Frontend: [Vercel Deployment](https://cp363-freelancer-system.vercel.app/)
