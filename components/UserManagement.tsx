@@ -41,7 +41,7 @@ const UserManagement: React.FC = () => {
 
   return (
     <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4">User Management</h2>
+      <h2 className="text-2xl font-bold mb-4 text-blue-500">User Management</h2>
 
       <form onSubmit={handleSubmit} className="mb-8">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -50,7 +50,7 @@ const UserManagement: React.FC = () => {
             placeholder="Name"
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="p-2 border rounded"
+            className="p-2 border rounded text-blue-500 placeholder-blue-300"
             required
           />
           <input
@@ -60,7 +60,7 @@ const UserManagement: React.FC = () => {
             onChange={(e) =>
               setFormData({ ...formData, email: e.target.value })
             }
-            className="p-2 border rounded"
+            className="p-2 border rounded text-blue-500 placeholder-blue-300"
             required
           />
           <input
@@ -70,7 +70,7 @@ const UserManagement: React.FC = () => {
             onChange={(e) =>
               setFormData({ ...formData, password: e.target.value })
             }
-            className="p-2 border rounded"
+            className="p-2 border rounded text-blue-500 placeholder-blue-300"
             required
           />
         </div>
@@ -83,12 +83,12 @@ const UserManagement: React.FC = () => {
       </form>
 
       <div>
-        <h3 className="text-xl font-semibold mb-2">User List</h3>
+        <h3 className="text-xl font-semibold mb-2 text-blue-500">User List</h3>
         <div className="grid grid-cols-1 gap-4">
           {users.map((user) => (
             <div key={user.id} className="p-4 border rounded shadow">
-              <p className="font-medium">{user.name}</p>
-              <p className="text-gray-600">{user.email}</p>
+              <p className="font-medium text-blue-500">{user.name}</p>
+              <p className="text-blue-400">{user.email}</p>
             </div>
           ))}
         </div>

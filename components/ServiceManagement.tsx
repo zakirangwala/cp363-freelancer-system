@@ -48,7 +48,9 @@ const ServiceManagement: React.FC = () => {
 
   return (
     <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4">Service Management</h2>
+      <h2 className="text-2xl font-bold mb-4 text-blue-500">
+        Service Management
+      </h2>
 
       <form onSubmit={handleSubmit} className="mb-8">
         <div className="grid grid-cols-1 gap-4">
@@ -59,7 +61,7 @@ const ServiceManagement: React.FC = () => {
             onChange={(e) =>
               setFormData({ ...formData, title: e.target.value })
             }
-            className="p-2 border rounded"
+            className="p-2 border rounded text-blue-500 placeholder-blue-300"
             required
           />
           <textarea
@@ -68,7 +70,7 @@ const ServiceManagement: React.FC = () => {
             onChange={(e) =>
               setFormData({ ...formData, description: e.target.value })
             }
-            className="p-2 border rounded"
+            className="p-2 border rounded text-blue-500 placeholder-blue-300"
             required
           />
           <input
@@ -78,7 +80,7 @@ const ServiceManagement: React.FC = () => {
             onChange={(e) =>
               setFormData({ ...formData, price: e.target.value })
             }
-            className="p-2 border rounded"
+            className="p-2 border rounded text-blue-500 placeholder-blue-300"
             required
           />
           <input
@@ -88,7 +90,7 @@ const ServiceManagement: React.FC = () => {
             onChange={(e) =>
               setFormData({ ...formData, freelancerId: e.target.value })
             }
-            className="p-2 border rounded"
+            className="p-2 border rounded text-blue-500 placeholder-blue-300"
             required
           />
         </div>
@@ -101,16 +103,18 @@ const ServiceManagement: React.FC = () => {
       </form>
 
       <div>
-        <h3 className="text-xl font-semibold mb-2">Service List</h3>
+        <h3 className="text-xl font-semibold mb-2 text-blue-500">
+          Service List
+        </h3>
         <div className="grid grid-cols-1 gap-4">
           {services.map((service) => (
             <div key={service.id} className="p-4 border rounded shadow">
               <h4 className="font-medium text-lg">{service.title}</h4>
-              <p className="text-gray-600">{service.description}</p>
+              <p className="text-blue-400">{service.description}</p>
               <p className="text-blue-600 font-semibold mt-2">
                 ${service.price}
               </p>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-blue-400">
                 Freelancer ID: {service.freelancerId}
               </p>
             </div>
