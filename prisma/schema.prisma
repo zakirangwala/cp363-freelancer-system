@@ -33,6 +33,7 @@ model Service {
   description  String          @db.VarChar(50)
   price        Float           @db.Float
   orderItems   OrderItem[]
+  cartItems    CartItem[]
   freelancer   Freelancer      @relation(fields: [freelancerID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "service_ibfk_1")
   reviews      ServiceReview[]
 
@@ -68,12 +69,25 @@ model OrderItem {
 }
 
 model Cart {
-  id     Int     @id @default(autoincrement())
+  id     Int        @id @default(autoincrement())
   userID Int
-  user   User    @relation(fields: [userID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cart_ibfk_1")
+  user   User       @relation(fields: [userID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cart_ibfk_1")
   orders Order[]
+  items  CartItem[]
 
   @@index([userID], map: "userID")
+}
+
+model CartItem {
+  id        Int     @id @default(autoincrement())
+  cartID    Int
+  serviceID Int
+  quantity  Int
+  cart      Cart    @relation(fields: [cartID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cartitem_ibfk_1")
+  service   Service @relation(fields: [serviceID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cartitem_ibfk_2")
+
+  @@index([cartID], map: "cartID")
+  @@index([serviceID], map: "serviceID")
 }
 
 model Payment {
