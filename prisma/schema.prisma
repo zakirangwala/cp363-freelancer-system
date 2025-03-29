@@ -8,106 +8,105 @@ datasource db {
 }
 
 model User {
-  id            Int             @id
-  name          String          @db.VarChar(50)
-  email         String          @unique(map: "email") @db.VarChar(50)
-  password      String          @db.VarChar(50)
-  Cart          Cart[]
-  Order         Order[]
-  OrderTable    OrderTable[]
-  ServiceReview ServiceReview[]
+  id         Int             @id @default(autoincrement())
+  name       String          @db.VarChar(50)
+  email      String          @unique @db.VarChar(50)
+  password   String          @db.VarChar(50)
+  carts      Cart[]
+  orders     Order[]
+  reviews    ServiceReview[]
+  OrderTable OrderTable[]
 }
 
-model Service {
-  id            Int             @id @default(autoincrement())
-  freelancerID  Int
-  name          String          @db.VarChar(50)
-  description   String          @db.VarChar(50)
-  price         Float           @db.Float
-  CartItem      CartItem[]
-  OrderItem     OrderItem[]
-  Freelancer    Freelancer      @relation(fields: [freelancerID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "service_ibfk_1")
-  ServiceReview ServiceReview[]
-
-  @@index([freelancerID], map: "freelancerID")
-}
-
-model Order {
-  id        Int         @id
-  cartID    Int
-  userID    Int
-  amount    Float       @db.Float
-  Cart      Cart        @relation(fields: [cartID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "order_ibfk_1")
-  User      User        @relation(fields: [userID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "order_ibfk_2")
-  OrderItem OrderItem[]
-  Payment   Payment[]
-
-  @@index([cartID], map: "cartID")
-  @@index([userID], map: "userID")
-}
-
-model Payment {
-  id            Int    @id
-  orderID       Int
-  paymentMethod String @db.VarChar(50)
-  Order         Order  @relation(fields: [orderID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "payment_ibfk_1")
-
-  @@index([orderID], map: "orderID")
-}
-
-model Cart {
-  id       Int        @id
-  userID   Int
-  User     User       @relation(fields: [userID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cart_ibfk_1")
-  CartItem CartItem[]
-  Order    Order[]
-
-  @@index([userID], map: "userID")
-}
-
-model CartItem {
-  id        Int     @id
-  cartID    Int
-  serviceID Int
-  Cart      Cart    @relation(fields: [cartID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cartitem_ibfk_1")
-  Service   Service @relation(fields: [serviceID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cartitem_ibfk_2")
-
-  @@index([cartID], map: "cartID")
-  @@index([serviceID], map: "serviceID")
-}
-
-model Category {
-  id   Int    @id
-  name String @db.VarChar(50)
-}
-
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model Freelancer {
   id                Int         @id @default(autoincrement())
   name              String      @db.VarChar(50)
   freelancerOrigin  String?     @db.VarChar(50)
   yearsOfExperience Int?
-  OrderItem         OrderItem[]
-  Service           Service[]
+  services          Service[]
+  orderItems        OrderItem[]
+}
+
+model Service {
+  id           Int             @id @default(autoincrement())
+  freelancerID Int
+  name         String          @db.VarChar(50)
+  description  String          @db.VarChar(50)
+  price        Float           @db.Float
+  freelancer   Freelancer      @relation(fields: [freelancerID], references: [id])
+  cartItems    CartItem[]
+  orderItems   OrderItem[]
+  reviews      ServiceReview[]
+
+  @@index([freelancerID])
+}
+
+model Order {
+  id         Int         @id @default(autoincrement())
+  userID     Int
+  cartID     Int
+  amount     Float       @db.Float
+  user       User        @relation(fields: [userID], references: [id])
+  cart       Cart        @relation(fields: [cartID], references: [id])
+  orderItems OrderItem[]
+  payments   Payment[]
+
+  @@index([userID])
+  @@index([cartID])
 }
 
 model OrderItem {
-  id           Int        @id
+  id           Int        @id @default(autoincrement())
   orderID      Int
   freelancerID Int
   serviceID    Int
-  Order        Order      @relation(fields: [orderID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "orderitem_ibfk_1")
-  Freelancer   Freelancer @relation(fields: [freelancerID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "orderitem_ibfk_2")
-  Service      Service    @relation(fields: [serviceID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "orderitem_ibfk_3")
+  order        Order      @relation(fields: [orderID], references: [id])
+  freelancer   Freelancer @relation(fields: [freelancerID], references: [id])
+  service      Service    @relation(fields: [serviceID], references: [id])
 
-  @@index([freelancerID], map: "freelancerID")
-  @@index([orderID], map: "orderID")
-  @@index([serviceID], map: "serviceID")
+  @@index([orderID])
+  @@index([freelancerID])
+  @@index([serviceID])
+}
+
+model Cart {
+  id        Int        @id @default(autoincrement())
+  userID    Int
+  user      User       @relation(fields: [userID], references: [id])
+  cartItems CartItem[]
+  orders    Order[]
+
+  @@index([userID])
+}
+
+model CartItem {
+  id        Int     @id @default(autoincrement())
+  cartID    Int
+  serviceID Int
+  cart      Cart    @relation(fields: [cartID], references: [id])
+  service   Service @relation(fields: [serviceID], references: [id])
+
+  @@index([cartID])
+  @@index([serviceID])
+}
+
+model Payment {
+  id            Int    @id @default(autoincrement())
+  orderID       Int
+  paymentMethod String @db.VarChar(50)
+  order         Order  @relation(fields: [orderID], references: [id])
+
+  @@index([orderID])
+}
+
+model Category {
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(50)
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model OrderTable {
-  id     Int   @id
+  id     Int   @id @default(autoincrement())
   userID Int
   amount Float @db.Float
   User   User  @relation(fields: [userID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ordertable_ibfk_1")
@@ -117,14 +116,14 @@ model OrderTable {
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model ServiceReview {
-  id          Int     @id
+  id          Int     @id @default(autoincrement())
   serviceID   Int
   userID      Int
   rating      Int
   description String  @db.VarChar(300)
-  Service     Service @relation(fields: [serviceID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "servicereview_ibfk_1")
-  User        User    @relation(fields: [userID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "servicereview_ibfk_2")
+  service     Service @relation(fields: [serviceID], references: [id])
+  user        User    @relation(fields: [userID], references: [id])
 
-  @@index([serviceID], map: "serviceID")
-  @@index([userID], map: "userID")
+  @@index([serviceID])
+  @@index([userID])
 }
