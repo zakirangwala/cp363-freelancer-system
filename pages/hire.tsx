@@ -115,12 +115,14 @@ const HirePage: NextPage = () => {
         });
         throw new Error("Cart was not properly updated");
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error adding to cart:", error);
       console.error("Full error details:", {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
+        message: error instanceof Error ? error.message : "Unknown error",
+        response: (error as { response?: { data: unknown; status: number } })
+          ?.response?.data,
+        status: (error as { response?: { data: unknown; status: number } })
+          ?.response?.status,
       });
       alert("Failed to add item to cart. Please try again.");
     } finally {
