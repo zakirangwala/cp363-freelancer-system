@@ -8,14 +8,13 @@ datasource db {
 }
 
 model User {
-  id         Int             @id @default(autoincrement())
-  name       String          @db.VarChar(50)
-  email      String          @unique @db.VarChar(50)
-  password   String          @db.VarChar(50)
-  carts      Cart[]
-  orders     Order[]
-  reviews    ServiceReview[]
-  OrderTable OrderTable[]
+  id       Int             @id @default(autoincrement())
+  name     String          @db.VarChar(50)
+  email    String          @unique(map: "email") @db.VarChar(50)
+  password String          @db.VarChar(255)
+  carts    Cart[]
+  orders   Order[]
+  reviews  ServiceReview[]
 }
 
 model Freelancer {
@@ -23,8 +22,8 @@ model Freelancer {
   name              String      @db.VarChar(50)
   freelancerOrigin  String?     @db.VarChar(50)
   yearsOfExperience Int?
-  services          Service[]
   orderItems        OrderItem[]
+  services          Service[]
 }
 
 model Service {
@@ -33,12 +32,11 @@ model Service {
   name         String          @db.VarChar(50)
   description  String          @db.VarChar(50)
   price        Float           @db.Float
-  freelancer   Freelancer      @relation(fields: [freelancerID], references: [id])
-  cartItems    CartItem[]
   orderItems   OrderItem[]
+  freelancer   Freelancer      @relation(fields: [freelancerID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "service_ibfk_1")
   reviews      ServiceReview[]
 
-  @@index([freelancerID])
+  @@index([freelancerID], map: "freelancerID")
 }
 
 model Order {
@@ -46,13 +44,13 @@ model Order {
   userID     Int
   cartID     Int
   amount     Float       @db.Float
-  user       User        @relation(fields: [userID], references: [id])
-  cart       Cart        @relation(fields: [cartID], references: [id])
+  user       User        @relation(fields: [userID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "order_ibfk_1")
+  cart       Cart        @relation(fields: [cartID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "order_ibfk_2")
   orderItems OrderItem[]
   payments   Payment[]
 
-  @@index([userID])
-  @@index([cartID])
+  @@index([cartID], map: "cartID")
+  @@index([userID], map: "userID")
 }
 
 model OrderItem {
@@ -60,58 +58,36 @@ model OrderItem {
   orderID      Int
   freelancerID Int
   serviceID    Int
-  order        Order      @relation(fields: [orderID], references: [id])
-  freelancer   Freelancer @relation(fields: [freelancerID], references: [id])
-  service      Service    @relation(fields: [serviceID], references: [id])
+  order        Order      @relation(fields: [orderID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "orderitem_ibfk_1")
+  freelancer   Freelancer @relation(fields: [freelancerID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "orderitem_ibfk_2")
+  service      Service    @relation(fields: [serviceID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "orderitem_ibfk_3")
 
-  @@index([orderID])
-  @@index([freelancerID])
-  @@index([serviceID])
+  @@index([freelancerID], map: "freelancerID")
+  @@index([orderID], map: "orderID")
+  @@index([serviceID], map: "serviceID")
 }
 
 model Cart {
-  id        Int        @id @default(autoincrement())
-  userID    Int
-  user      User       @relation(fields: [userID], references: [id])
-  cartItems CartItem[]
-  orders    Order[]
+  id     Int     @id @default(autoincrement())
+  userID Int
+  user   User    @relation(fields: [userID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cart_ibfk_1")
+  orders Order[]
 
-  @@index([userID])
-}
-
-model CartItem {
-  id        Int     @id @default(autoincrement())
-  cartID    Int
-  serviceID Int
-  cart      Cart    @relation(fields: [cartID], references: [id])
-  service   Service @relation(fields: [serviceID], references: [id])
-
-  @@index([cartID])
-  @@index([serviceID])
+  @@index([userID], map: "userID")
 }
 
 model Payment {
   id            Int    @id @default(autoincrement())
   orderID       Int
   paymentMethod String @db.VarChar(50)
-  order         Order  @relation(fields: [orderID], references: [id])
+  order         Order  @relation(fields: [orderID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "payment_ibfk_1")
 
-  @@index([orderID])
+  @@index([orderID], map: "orderID")
 }
 
 model Category {
   id   Int    @id @default(autoincrement())
   name String @db.VarChar(50)
-}
-
-/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-model OrderTable {
-  id     Int   @id @default(autoincrement())
-  userID Int
-  amount Float @db.Float
-  User   User  @relation(fields: [userID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ordertable_ibfk_1")
-
-  @@index([userID], map: "userID")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -121,9 +97,9 @@ model ServiceReview {
   userID      Int
   rating      Int
   description String  @db.VarChar(300)
-  service     Service @relation(fields: [serviceID], references: [id])
-  user        User    @relation(fields: [userID], references: [id])
+  service     Service @relation(fields: [serviceID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "servicereview_ibfk_1")
+  user        User    @relation(fields: [userID], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "servicereview_ibfk_2")
 
-  @@index([serviceID])
-  @@index([userID])
+  @@index([serviceID], map: "serviceID")
+  @@index([userID], map: "userID")
 }
