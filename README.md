@@ -1,10 +1,10 @@
 # CP363 Assignment 9 - Freelancer System
 
-A full-stack freelancer marketplace system built with Next.js, Prisma, and MySQL. This project was developed for CP363 Database Management Systems I.
+A full-stack freelancer marketplace system built with Next.js, Prisma, and MySQL. This project was developed for CP363 Databases.
 
 ## Live Demo
 
-- Frontend: [Vercel Deployment](https://cp363-freelancer-system-1uabcp4l6-zakis-projects-d9180f5a.vercel.app/)
+- Frontend: [Vercel Deployment](https://cp363-freelancer-system.vercel.app/)
 - Backend: Deployed on Railway
 
 ## Database Normalization
