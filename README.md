@@ -1,4 +1,106 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# Freelancer System
+
+A web-based application for managing freelancers and their services using Next.js and MySQL.
+
+## Prerequisites
+
+- Node.js (v14 or higher)
+- MySQL Server
+- npm or yarn
+
+## Setup
+
+1. Clone the repository:
+
+```bash
+git clone <repository-url>
+cd freelancer-system
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Set up the MySQL database:
+
+- Create a new database named `freelancer_system`
+- Update the database configuration in `lib/database.ts` with your MySQL credentials:
+
+```typescript
+const db = mysql.createConnection({
+  host: "localhost",
+  port: 3306,
+  user: "root",
+  password: "ENTER PASSWORD HERE",
+  database: "freelancer_system",
+});
+```
+
+4. Create the required tables in your MySQL database:
+
+```sql
+CREATE TABLE User (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE Service (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    price DECIMAL(10,2) NOT NULL,
+    freelancerId INT,
+    FOREIGN KEY (freelancerId) REFERENCES User(id)
+);
+```
+
+## Running the Application
+
+1. Start the development server:
+
+```bash
+npm run dev
+```
+
+2. Open your browser and navigate to `http://localhost:3000`
+
+## Features
+
+- User Management
+  - Add new users
+  - View user list
+- Service Management
+  - Add new services
+  - View service list
+
+## Project Structure
+
+```
+freelancer-system/
+├── components/
+│   ├── UserManagement.tsx
+│   └── ServiceManagement.tsx
+├── lib/
+│   └── database.ts
+├── pages/
+│   ├── api/
+│   │   ├── users.ts
+│   │   └── services.ts
+│   └── index.tsx
+└── public/
+```
+
+## Technologies Used
+
+- Next.js
+- TypeScript
+- MySQL
+- Tailwind CSS
+- Axios
 
 ## Getting Started
 
