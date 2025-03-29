@@ -1,21 +1,29 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
+interface Freelancer {
+  id: number;
+  name: string;
+  freelancerOrigin: string | null;
+  yearsOfExperience: number | null;
+}
+
 interface Service {
   id: number;
-  title: string;
+  name: string;
   description: string;
   price: number;
-  freelancerId: number;
+  freelancerID: number;
+  freelancer: Freelancer;
 }
 
 const ServiceManagement: React.FC = () => {
   const [services, setServices] = useState<Service[]>([]);
   const [formData, setFormData] = useState({
-    title: "",
+    name: "",
     description: "",
     price: "",
-    freelancerId: "",
+    freelancerID: "",
   });
 
   useEffect(() => {
@@ -34,12 +42,8 @@ const ServiceManagement: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post("/api/services", {
-        ...formData,
-        price: parseFloat(formData.price),
-        freelancerId: parseInt(formData.freelancerId),
-      });
-      setFormData({ title: "", description: "", price: "", freelancerId: "" });
+      await axios.post("/api/services", formData);
+      setFormData({ name: "", description: "", price: "", freelancerID: "" });
       fetchServices();
     } catch (error) {
       console.error("Error creating service:", error);
@@ -56,11 +60,9 @@ const ServiceManagement: React.FC = () => {
         <div className="grid grid-cols-1 gap-4">
           <input
             type="text"
-            placeholder="Service Title"
-            value={formData.title}
-            onChange={(e) =>
-              setFormData({ ...formData, title: e.target.value })
-            }
+            placeholder="Service Name"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             className="p-2 border rounded text-blue-500 placeholder-blue-300"
             required
           />
@@ -86,9 +88,9 @@ const ServiceManagement: React.FC = () => {
           <input
             type="number"
             placeholder="Freelancer ID"
-            value={formData.freelancerId}
+            value={formData.freelancerID}
             onChange={(e) =>
-              setFormData({ ...formData, freelancerId: e.target.value })
+              setFormData({ ...formData, freelancerID: e.target.value })
             }
             className="p-2 border rounded text-blue-500 placeholder-blue-300"
             required
@@ -109,13 +111,11 @@ const ServiceManagement: React.FC = () => {
         <div className="grid grid-cols-1 gap-4">
           {services.map((service) => (
             <div key={service.id} className="p-4 border rounded shadow">
-              <h4 className="font-medium text-lg">{service.title}</h4>
+              <p className="font-medium text-blue-500">{service.name}</p>
               <p className="text-blue-400">{service.description}</p>
-              <p className="text-blue-600 font-semibold mt-2">
-                ${service.price}
-              </p>
-              <p className="text-sm text-blue-400">
-                Freelancer ID: {service.freelancerId}
+              <p className="text-blue-400">Price: ${service.price}</p>
+              <p className="text-blue-400">
+                Freelancer: {service.freelancer.name}
               </p>
             </div>
           ))}
