@@ -4,6 +4,7 @@ import Layout from "../components/Layout";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+// interface for dashboard statistics
 interface Stats {
   users: number;
   services: number;
@@ -11,6 +12,7 @@ interface Stats {
   orders: number;
 }
 
+// interface for service data structure
 interface Service {
   id: number;
   name: string;
@@ -21,13 +23,16 @@ interface Service {
   };
 }
 
+// interface for user data structure
 interface User {
   id: number;
   name: string;
   email: string;
 }
 
+// dashboard component that displays system statistics and recent activity
 const Dashboard: NextPage = () => {
+  // state management for dashboard data
   const [stats, setStats] = useState<Stats>({
     users: 0,
     services: 0,
@@ -39,11 +44,13 @@ const Dashboard: NextPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // fetch dashboard data on component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
+        // fetch all required data in parallel
         const [users, services, freelancers, orders] = await Promise.all([
           axios.get("/api/users"),
           axios.get("/api/services"),
@@ -51,6 +58,7 @@ const Dashboard: NextPage = () => {
           axios.get("/api/orders"),
         ]);
 
+        // update statistics
         setStats({
           users: users.data.length,
           services: services.data.length,
@@ -58,13 +66,13 @@ const Dashboard: NextPage = () => {
           orders: orders.data.length,
         });
 
-        // Get recent services (last 5)
+        // get recent services (last 5)
         const recentServicesData = services.data
           .sort((a: Service, b: Service) => b.id - a.id)
           .slice(0, 5);
         setRecentServices(recentServicesData);
 
-        // Get recent users (last 5)
+        // get recent users (last 5)
         const recentUsersData = users.data
           .sort((a: User, b: User) => b.id - a.id)
           .slice(0, 5);
@@ -80,6 +88,7 @@ const Dashboard: NextPage = () => {
     fetchData();
   }, []);
 
+  // loading state
   if (loading) {
     return (
       <Layout>
@@ -91,6 +100,7 @@ const Dashboard: NextPage = () => {
     );
   }
 
+  // error state
   if (error) {
     return (
       <Layout>
@@ -115,6 +125,7 @@ const Dashboard: NextPage = () => {
       <div className="p-6">
         <h1 className="text-3xl font-bold text-gray-800 mb-8">Dashboard</h1>
 
+        {/* statistics cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-gradient-to-br from-blue-400 to-blue-600 p-6 rounded-lg shadow-lg text-white transform hover:scale-105 transition-transform">
             <h2 className="text-xl font-semibold text-white opacity-90">
@@ -146,6 +157,7 @@ const Dashboard: NextPage = () => {
           </div>
         </div>
 
+        {/* recent activity sections */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
             <h2 className="text-2xl font-semibold text-emerald-600 mb-4">

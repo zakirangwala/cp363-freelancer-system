@@ -3,6 +3,7 @@ import Head from "next/head";
 import Layout from "../components/Layout";
 import UserManagement from "../components/UserManagement";
 
+// users page component that displays user management interface
 const UsersPage: NextPage = () => {
   return (
     <Layout>

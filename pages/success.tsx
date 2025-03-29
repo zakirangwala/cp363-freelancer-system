@@ -3,6 +3,7 @@ import Head from "next/head";
 import Link from "next/link";
 import Layout from "../components/Layout";
 
+// success page component shown after successful payment
 const SuccessPage: NextPage = () => {
   return (
     <Layout>
@@ -12,6 +13,7 @@ const SuccessPage: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
+      {/* centered success message with icon */}
       <div className="min-h-[80vh] flex items-center justify-center">
         <div className="text-center">
           <div className="mb-8">
@@ -32,6 +34,7 @@ const SuccessPage: NextPage = () => {
             </div>
           </div>
 
+          {/* success message and navigation links */}
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             Payment Successful!
           </h1>

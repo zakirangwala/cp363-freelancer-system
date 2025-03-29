@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
+// interface for user data structure
 interface User {
   id: number;
   name: string;
   email: string;
 }
 
+// component for managing users (list, create)
 const UserManagement: React.FC = () => {
+  // state management for users and form data
   const [users, setUsers] = useState<User[]>([]);
   const [formData, setFormData] = useState({
     name: "",
@@ -15,10 +18,12 @@ const UserManagement: React.FC = () => {
     password: "",
   });
 
+  // fetch users on component mount
   useEffect(() => {
     fetchUsers();
   }, []);
 
+  // fetch all users from API
   const fetchUsers = async () => {
     try {
       const response = await axios.get("/api/users");
@@ -28,6 +33,7 @@ const UserManagement: React.FC = () => {
     }
   };
 
+  // handle user creation form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {

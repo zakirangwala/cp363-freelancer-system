@@ -1,12 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../lib/prisma";
 
+// handles cart item operations (get, create, update, delete)
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   if (req.method === "GET") {
     try {
+      // fetch all cart items with related data
       const cartItems = await prisma.cartItem.findMany({
         include: {
           service: true,
@@ -22,12 +24,14 @@ export default async function handler(
     try {
       const { cartId, serviceId, quantity } = req.body;
 
+      // validate required fields
       if (!cartId || !serviceId || !quantity) {
         return res
           .status(400)
           .json({ error: "Cart ID, Service ID, and quantity are required" });
       }
 
+      // create new cart item with relationships
       const cartItem = await prisma.cartItem.create({
         data: {
           cartID: parseInt(cartId),
@@ -49,10 +53,12 @@ export default async function handler(
     try {
       const { id, quantity } = req.body;
 
+      // validate required fields for update
       if (!id || !quantity) {
         return res.status(400).json({ error: "ID and quantity are required" });
       }
 
+      // update cart item quantity
       const cartItem = await prisma.cartItem.update({
         where: { id: parseInt(id) },
         data: { quantity: parseInt(quantity) },
@@ -71,10 +77,12 @@ export default async function handler(
     try {
       const { id } = req.query;
 
+      // validate required fields for deletion
       if (!id) {
         return res.status(400).json({ error: "ID is required" });
       }
 
+      // remove cart item
       await prisma.cartItem.delete({
         where: { id: parseInt(id as string) },
       });
@@ -85,6 +93,7 @@ export default async function handler(
       return res.status(500).json({ error: "Error deleting cart item" });
     }
   } else {
+    // handle unsupported methods
     res.setHeader("Allow", ["GET", "POST", "PUT", "DELETE"]);
     return res.status(405).end(`Method ${req.method} Not Allowed`);
   }

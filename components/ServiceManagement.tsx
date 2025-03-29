@@ -8,6 +8,7 @@ interface Freelancer {
   yearsOfExperience: number | null;
 }
 
+// interface for service data structure
 interface Service {
   id: number;
   name: string;
@@ -17,7 +18,9 @@ interface Service {
   freelancer: Freelancer;
 }
 
+// component for managing services (list, create)
 const ServiceManagement: React.FC = () => {
+  // state management for services and form data
   const [services, setServices] = useState<Service[]>([]);
   const [formData, setFormData] = useState({
     name: "",
@@ -26,10 +29,12 @@ const ServiceManagement: React.FC = () => {
     freelancerID: "",
   });
 
+  // fetch services on component mount
   useEffect(() => {
     fetchServices();
   }, []);
 
+  // fetch all services from API
   const fetchServices = async () => {
     try {
       const response = await axios.get("/api/services");
@@ -39,6 +44,7 @@ const ServiceManagement: React.FC = () => {
     }
   };
 
+  // handle service creation form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {

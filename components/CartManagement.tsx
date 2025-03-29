@@ -1,32 +1,37 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-interface Service {
+// interface for cart data structure
+interface Cart {
   id: number;
-  name: string;
-  description: string;
-  price: number;
+  userID: number;
+  items: CartItem[];
+  user: User;
 }
 
 interface CartItem {
   id: number;
+  cartID: number;
+  serviceID: number;
   quantity: number;
   service: Service;
-  cartId: number;
 }
 
-interface Cart {
+interface Service {
   id: number;
-  userId: number;
-  items: CartItem[];
+  name: string;
+  price: number;
 }
 
 interface User {
   id: number;
   name: string;
+  email: string;
 }
 
+// component for managing carts (list, create, update)
 const CartManagement: React.FC = () => {
+  // state management for carts and form data
   const [carts, setCarts] = useState<Cart[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [selectedCart, setSelectedCart] = useState<Cart | null>(null);
@@ -36,11 +41,13 @@ const CartManagement: React.FC = () => {
     quantity: "1",
   });
 
+  // fetch carts and users on component mount
   useEffect(() => {
     fetchCarts();
     fetchUsers();
   }, []);
 
+  // fetch all carts from API
   const fetchCarts = async () => {
     try {
       const response = await axios.get("/api/cart");
@@ -50,6 +57,7 @@ const CartManagement: React.FC = () => {
     }
   };
 
+  // fetch all users from API
   const fetchUsers = async () => {
     try {
       const response = await axios.get("/api/users");
@@ -59,10 +67,11 @@ const CartManagement: React.FC = () => {
     }
   };
 
+  // handle cart creation form submission
   const handleCreateCart = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post("/api/cart", { userId: parseInt(formData.userId) });
+      await axios.post("/api/cart", { userID: parseInt(formData.userId) });
       setFormData({ userId: "", serviceId: "", quantity: "1" });
       fetchCarts();
     } catch (error) {
@@ -70,6 +79,7 @@ const CartManagement: React.FC = () => {
     }
   };
 
+  // handle adding item to selected cart
   const handleAddItem = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedCart) return;
@@ -87,6 +97,7 @@ const CartManagement: React.FC = () => {
     }
   };
 
+  // handle updating cart item quantity
   const handleUpdateQuantity = async (itemId: number, newQuantity: number) => {
     try {
       await axios.put(`/api/cart-items`, {
@@ -154,7 +165,7 @@ const CartManagement: React.FC = () => {
                 <div className="flex justify-between items-center">
                   <div>
                     <p className="font-medium text-blue-500">
-                      Cart #{cart.id} - User #{cart.userId}
+                      Cart #{cart.id} - User #{cart.userID}
                     </p>
                     <p className="text-sm text-blue-400">
                       Items: {cart.items.length}

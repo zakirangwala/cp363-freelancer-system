@@ -3,6 +3,7 @@ import Head from "next/head";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
+// interface for service data structure
 interface Service {
   id: number;
   name: string;
@@ -17,12 +18,14 @@ interface Service {
 }
 
 const HirePage: NextPage = () => {
+  // state management for services and ui
   const [services, setServices] = useState<Service[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // fetch services on component mount
   useEffect(() => {
     const fetchServices = async () => {
       try {
@@ -38,6 +41,7 @@ const HirePage: NextPage = () => {
     fetchServices();
   }, []);
 
+  // filter services based on search term
   const filteredServices = services.filter(
     (service) =>
       service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -45,10 +49,12 @@ const HirePage: NextPage = () => {
       service.freelancer.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // handle service selection
   const handleServiceSelect = (service: Service) => {
     setSelectedService(service);
   };
 
+  // handle adding service to cart and checkout
   const handleAddToCart = async () => {
     if (!selectedService) return;
     if (isProcessing) return;
@@ -57,7 +63,7 @@ const HirePage: NextPage = () => {
       setIsProcessing(true);
       console.log("Starting cart creation process...");
 
-      // First create a cart if needed
+      // create new cart for user
       const cartResponse = await axios.post("/api/cart", {
         userId: 1, // For MVP, we'll use a default user
       });
@@ -71,8 +77,8 @@ const HirePage: NextPage = () => {
         throw new Error("Failed to create cart");
       }
 
+      // add selected service to cart
       console.log("Adding item to cart...");
-      // Then add the item to the cart
       const cartItemResponse = await axios.post("/api/cart-items", {
         cartId: cartResponse.data.id,
         serviceId: selectedService.id,

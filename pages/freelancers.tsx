@@ -3,6 +3,7 @@ import Head from "next/head";
 import Layout from "../components/Layout";
 import FreelancerManagement from "../components/FreelancerManagement";
 
+// freelancers page component that displays freelancer management interface
 const FreelancersPage: NextPage = () => {
   return (
     <Layout>

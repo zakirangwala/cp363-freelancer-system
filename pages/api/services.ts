@@ -1,12 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../lib/prisma";
 
+// handles service operations (get all services, create new service)
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   if (req.method === "GET") {
     try {
+      // fetch all services with freelancer info
       const services = await prisma.service.findMany({
         include: {
           freelancer: true,
@@ -21,10 +23,12 @@ export default async function handler(
     try {
       const { name, description, price, freelancerID } = req.body;
 
+      // validate required fields
       if (!name || !description || !price || !freelancerID) {
         return res.status(400).json({ error: "Missing required fields" });
       }
 
+      // create new service with freelancer relationship
       const service = await prisma.service.create({
         data: {
           name,
@@ -43,6 +47,7 @@ export default async function handler(
       return res.status(500).json({ error: "Error creating service" });
     }
   } else {
+    // handle unsupported methods
     res.setHeader("Allow", ["GET", "POST"]);
     return res.status(405).end(`Method ${req.method} Not Allowed`);
   }

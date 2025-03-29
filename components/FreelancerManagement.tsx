@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
+// interface for freelancer data structure
+interface Freelancer {
+  id: number;
+  name: string;
+  freelancerOrigin?: string;
+  yearsOfExperience?: number;
+  services: Service[];
+}
+
 interface Service {
   id: number;
   name: string;
@@ -8,15 +17,9 @@ interface Service {
   price: number;
 }
 
-interface Freelancer {
-  id: number;
-  name: string;
-  freelancerOrigin: string | null;
-  yearsOfExperience: number | null;
-  services: Service[];
-}
-
+// component for managing freelancers (list, create)
 const FreelancerManagement: React.FC = () => {
+  // state management for freelancers and form data
   const [freelancers, setFreelancers] = useState<Freelancer[]>([]);
   const [formData, setFormData] = useState({
     name: "",
@@ -24,10 +27,12 @@ const FreelancerManagement: React.FC = () => {
     yearsOfExperience: "",
   });
 
+  // fetch freelancers on component mount
   useEffect(() => {
     fetchFreelancers();
   }, []);
 
+  // fetch all freelancers from API
   const fetchFreelancers = async () => {
     try {
       const response = await axios.get("/api/freelancers");
@@ -37,6 +42,7 @@ const FreelancerManagement: React.FC = () => {
     }
   };
 
+  // handle freelancer creation form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {

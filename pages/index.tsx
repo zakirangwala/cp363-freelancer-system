@@ -2,6 +2,7 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 
+// home page component with rainbow animation and navigation links
 const Home: NextPage = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
@@ -9,6 +10,7 @@ const Home: NextPage = () => {
         <title>Welcome - Freelancer System</title>
         <meta name="description" content="Welcome to the freelancer system" />
         <link rel="icon" href="/favicon.ico" />
+        {/* rainbow animation styles for heading */}
         <style>
           {`
             @keyframes rainbow {
@@ -27,6 +29,7 @@ const Home: NextPage = () => {
       </Head>
 
       <main className="text-center">
+        {/* animated title and description */}
         <h1 className="text-6xl font-bold rainbow-text mb-4">
           CP363 Assignment 9
         </h1>
@@ -36,6 +39,7 @@ const Home: NextPage = () => {
         <p className="text-sm text-blue-600 font-bold mb-8">
           By Zaki Rangwala (210546860) and Elvis Lin (169044349){" "}
         </p>
+        {/* navigation and external links */}
         <div className="flex flex-col items-center gap-4">
           <div className="flex gap-4">
             <Link

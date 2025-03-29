@@ -3,6 +3,7 @@ import Head from "next/head";
 import Layout from "../components/Layout";
 import ServiceManagement from "../components/ServiceManagement";
 
+// services page component that displays service management interface
 const ServicesPage: NextPage = () => {
   return (
     <Layout>

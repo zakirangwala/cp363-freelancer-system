@@ -1,142 +1,128 @@
-# Freelancer System
+# CP363 Assignment 9 - Freelancer System
 
-A web-based application for managing freelancers and their services using Next.js and MySQL.
+A full-stack freelancer marketplace system built with Next.js, Prisma, and MySQL. This project was developed for CP363 Database Management Systems I.
 
-## Prerequisites
+## Live Demo
 
-- Node.js (v14 or higher)
-- MySQL Server
-- npm or yarn
+- Frontend: [Vercel Deployment](https://cp363-freelancer-system-1uabcp4l6-zakis-projects-d9180f5a.vercel.app/)
+- Backend: Deployed on Railway
 
-## Setup
+## Database Normalization
 
-1. Clone the repository:
+Our database schema follows the Third Normal Form (3NF) and Boyce-Codd Normal Form (BCNF) principles:
 
-```bash
-git clone <repository-url>
-cd freelancer-system
-```
+1. **First Normal Form (1NF)**:
 
-2. Install dependencies:
+   - All tables have a primary key
+   - All columns contain atomic values
+   - No repeating groups
 
-```bash
-npm install
-```
+2. **Second Normal Form (2NF)**:
 
-3. Set up the MySQL database:
+   - Satisfies 1NF
+   - All non-key attributes are fully functionally dependent on the primary key
 
-- Create a new database named `freelancer_system`
-- Update the database configuration in `lib/database.ts` with your MySQL credentials:
+3. **Third Normal Form (3NF)**:
 
-```typescript
-const db = mysql.createConnection({
-  host: "localhost",
-  port: 3306,
-  user: "root",
-  password: "ENTER PASSWORD HERE",
-  database: "freelancer_system",
-});
-```
+   - Satisfies 2NF
+   - No transitive dependencies
+   - Example: User information is stored in a separate table, referenced by Cart and Order tables
 
-4. Create the required tables in your MySQL database:
+4. **BCNF**:
+   - Satisfies 3NF
+   - For every dependency A → B, A is a superkey
+   - Example: Service-Freelancer relationship ensures each service belongs to exactly one freelancer
 
-```sql
-CREATE TABLE User (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL
-);
+Tables and their normalized relationships:
 
-CREATE TABLE Service (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    price DECIMAL(10,2) NOT NULL,
-    freelancerId INT,
-    FOREIGN KEY (freelancerId) REFERENCES User(id)
-);
-```
+- `User`: (id, name, email, password)
+- `Freelancer`: (id, name, freelancerOrigin, yearsOfExperience)
+- `Service`: (id, freelancerID, name, description, price)
+- `Cart`: (id, userID)
+- `CartItem`: (id, cartID, serviceID, quantity)
+- `Order`: (id, cartID, userID, amount)
+- `OrderItem`: (id, orderID, freelancerID, serviceID)
+- `Payment`: (id, orderID, paymentMethod)
+- `Category`: (id, name)
 
-## Running the Application
+## Local Installation
 
-1. Start the development server:
+1. **Clone the Repository**
 
-```bash
-npm run dev
-```
+   ```bash
+   git clone <repository-url>
+   cd freelancer-system
+   ```
 
-2. Open your browser and navigate to `http://localhost:3000`
+2. **Install Dependencies**
+
+   ```bash
+   npm install
+   ```
+
+3. **Set Up Environment Variables**
+   Create a `.env` file in the root directory:
+
+   ```env
+   DATABASE_URL="mysql://your_username:your_password@localhost:3306/freelancer_system"
+   ```
+
+4. **Set Up Database**
+
+   ```bash
+   # Create the database
+   mysql -u root -p
+   CREATE DATABASE freelancer_system;
+
+   # Apply migrations and seed data
+   npx prisma migrate reset --force
+   ```
+
+5. **Run Development Server**
+
+   ```bash
+   npm run dev
+   ```
+
+6. **Access the Application**
+   Open [http://localhost:3000](http://localhost:3000) in your browser
 
 ## Features
 
 - User Management
-  - Add new users
-  - View user list
 - Service Management
-  - Add new services
-  - View service list
+- Freelancer Profiles
+- Cart System
+- Order Processing
+- Payment Integration
+- Search and Filtering
+
+## Technologies Used
+
+- **Frontend**: Next.js, TailwindCSS, React
+- **Backend**: Next.js API Routes
+- **Database**: MySQL
+- **ORM**: Prisma
+- **Deployment**: Vercel (Frontend), Railway (Backend)
 
 ## Project Structure
 
 ```
 freelancer-system/
-├── components/
-│   ├── UserManagement.tsx
-│   └── ServiceManagement.tsx
-├── lib/
-│   └── database.ts
-├── pages/
-│   ├── api/
-│   │   ├── users.ts
-│   │   └── services.ts
-│   └── index.tsx
-└── public/
+├── components/         # React components
+├── pages/             # Next.js pages and API routes
+├── prisma/            # Database schema and migrations
+├── public/            # Static assets
+└── styles/            # CSS styles
 ```
 
-## Technologies Used
+## Contributors
 
-- Next.js
-- TypeScript
-- MySQL
-- Tailwind CSS
-- Axios
+- Zaki Rangwala (210546860)
+- Elvis Lin (169044349)
 
-## Getting Started
+## Course Information
 
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
-
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
-
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+- Course: CP363 Databases
+- Assignment: 9
+- Term: Winter 2025

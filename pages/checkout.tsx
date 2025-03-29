@@ -3,6 +3,7 @@ import Head from "next/head";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
+// interfaces for data structures
 interface Service {
   id: number;
   name: string;
@@ -26,6 +27,7 @@ interface Cart {
 }
 
 const CheckoutPage: NextPage = () => {
+  // state management for checkout process
   const [cart, setCart] = useState<Cart | null>(null);
   const [loading, setLoading] = useState(true);
   const [paymentMethod, setPaymentMethod] = useState("credit_card");
@@ -36,12 +38,13 @@ const CheckoutPage: NextPage = () => {
     name: "",
   });
 
+  // fetch cart data on component mount
   useEffect(() => {
     const fetchCart = async () => {
       try {
         const response = await axios.get("/api/cart");
         if (response.data && response.data.length > 0) {
-          // Get the most recent cart with items
+          // get most recent cart with items
           const carts = response.data as Cart[];
           const latestCartWithItems = carts
             .slice()
@@ -62,6 +65,7 @@ const CheckoutPage: NextPage = () => {
     fetchCart();
   }, []);
 
+  // calculate total price of items in cart
   const calculateTotal = () => {
     if (!cart?.items) return 0;
     return cart.items.reduce(
@@ -70,25 +74,26 @@ const CheckoutPage: NextPage = () => {
     );
   };
 
+  // handle payment form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!cart) return;
 
     try {
-      // Create order
+      // create order from cart
       const orderResponse = await axios.post("/api/orders", {
         userID: cart.userID,
         cartID: cart.id,
         amount: calculateTotal(),
       });
 
-      // Create payment
+      // process payment
       await axios.post("/api/payments", {
         orderID: orderResponse.data.id,
         paymentMethod: paymentMethod,
       });
 
-      // Redirect to success page
+      // redirect to success page
       window.location.href = "/success";
     } catch (error) {
       console.error("Error processing payment:", error);
