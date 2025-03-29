@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../lib/prisma";
+import bcrypt from "bcrypt";
 
 export default async function handler(
   req: NextApiRequest,
@@ -25,7 +26,7 @@ export default async function handler(
         data: {
           name,
           email,
-          password, // Note: In production, you should hash the password
+          password: await bcrypt.hash(password, 10),
         },
       });
 
